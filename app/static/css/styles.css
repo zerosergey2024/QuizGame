@@ -1,0 +1,53 @@
+body {
+    background-image: url('../img/fon2.jpg');
+    background-size: cover;
+    background-position: center;
+    height: 100vh;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.card-container {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.card {
+    width: 300px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease-in-out;
+}
+
+.card:hover {
+    transform: scale(1.05);
+    background-color: #DCDCDC;
+}
+
+.card-photo {
+    width: 100%;
+    height: auto;
+    position: relative
+    padding: 40px
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.card-info {
+    padding: 20px;
+    text-align: center;
+}
+
+.full-width-button {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #008000;
+    border-radius: 4px;
+    cursor: pointer;
+}

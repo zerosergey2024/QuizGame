@@ -1,0 +1,56 @@
+{% extends "shablon.html" %}
+
+{% block title %}Home Page{% endblock %}
+
+<style>
+  .card {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center; /* Центрирование содержимого по горизонтали */
+      height: 100%;
+      text-align: center; /* Центрирование текста */
+  }
+  .timer {
+      font-size: 48px; /* Увеличенный размер шрифта для таймера */
+      margin-top: 20px;
+      color: #333;
+  }
+</style>
+
+{% block content %}
+<div class="container my-1">
+    <div class="row">
+        <div class="col-lg-12 col-sm-12 mb-4">
+            <div class="card h-100" style="width: 54rem; height: auto;">
+                <div class="card-body">
+                    <form method="post">
+                      <div class="mb-3">
+                        <label for="InputUserName" class="form-label">Ваше имя</label>
+                        <input type="text" class="form-control" id="InputUserName" name="UserName" aria-describedby="UserNameHelp" required>
+                      </div>
+                      <div class="mb-3">
+                        <label for="InputEmail" class="form-label">Адрес электронной почты</label>
+                        <input type="email" class="form-control" id="InputEmail" aria-describedby="emailHelp" required>
+                      </div>
+                      <div class="mb-3">
+                        <label for="inputAvatar" class="form-label">Аватар</label>
+                        <input type="file" class="form-control" id="inputAvatar" required>
+                      </div>
+                      <div class="mb-3">
+                        <label for="InputPassword" class="form-label">Пароль</label>
+                        <input type="password" class="form-control" id="InputPassword">
+                      </div>
+                      <button type="submit" class="btn btn-primary">Отправить</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

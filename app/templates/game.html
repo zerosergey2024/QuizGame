@@ -1,0 +1,77 @@
+{% extends "shablon.html" %}
+
+{% block title %}Home Page{% endblock %}
+
+<style>
+  .card {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center; /* Центрирование содержимого по горизонтали */
+      height: 100%;
+      text-align: center; /* Центрирование текста */
+  }
+  .timer {
+      font-size: 48px; /* Увеличенный размер шрифта для таймера */
+      margin-top: 20px;
+      color: #333;
+  }
+</style>
+
+{% block content %}
+<div class="container my-1">
+    <div class="row">
+        <div class="col-lg-12 col-sm-12 mb-4">
+            <div class="card h-100" style="width: 54rem; height: auto;">
+                <div class="card-body">
+                    <div class="d-grid gap-2 d-md-flex justify-content-between">
+                        <div class="fw-bolder card-title" align="left" id="timer" class="timer">30</div>
+                        <div class="fw-bolder card-title" align="right" id="counter" class="counter"> 1 </div>
+                    </div>
+                    <div id="question" class="fs-3 fw-bold card-title" align="center">Столица России?</div>
+                    <a href="#" type="submit" class="btn btn-outline-success fw-bolder full-width-button my-1" onclick="checkAnswer('Москва')">Москва</a>
+                    <a href="#" type="submit" class="btn btn-outline-success fw-bolder full-width-button my-1" onclick="checkAnswer('Берлин')">Берлин</a>
+                    <a href="#" type="submit" class="btn btn-outline-success fw-bolder full-width-button my-1" onclick="checkAnswer('Лондон')">Лондон</a>
+                    <a href="#" type="submit" class="btn btn-outline-success fw-bolder full-width-button my-1" onclick="checkAnswer('Ташкент')">Ташкент</a>
+                    <a href="#" type="submit" class="btn btn-outline-danger fw-bolder full-width-button my-1" onclick="skipQuestion()">Пропустить</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let timeLeft = 30;
+    const timerElement = document.getElementById('timer');
+
+    const countdown = setInterval(() => {
+        if (timeLeft <= 0) {
+            clearInterval(countdown);
+            timerElement.textContent = 'Время вышло!';
+            setTimeout(() => {
+                location.reload(); // обновление страницы через 2 секунды после истечения времени
+            }, 1000);
+        } else {
+            timerElement.textContent = timeLeft;
+            timeLeft--;
+        }
+    }, 1000);
+
+    function checkAnswer(answer) {
+        // Здесь можно добавить логику проверки ответа
+        alert('Вы выбрали: ' + answer);
+        // Обновить счетчик вопросов и запустить следующий вопрос
+    }
+
+    function skipQuestion() {
+        // Здесь можно добавить логику пропуска вопроса
+        alert('Вопрос пропущен');
+        // Обновить счетчик вопросов и запустить следующий вопрос
+    }
+</script>
+{% endblock %}

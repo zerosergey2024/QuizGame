@@ -1,0 +1,56 @@
+{% extends "shablon.html" %}
+
+{% block title %}Home Page{% endblock %}
+
+{% block content %}
+<div class="container my-1">
+    <div class="row">
+        <!-- Карточка 1 -->
+        <div class="col-lg-4 col-sm-12 mb-4">
+          <div class="card h-100">
+            <img src="../static/image/button1.jpg" class="card-img-top" alt="...">
+            <div class="card-body">
+                <a href='/gamecat' class="btn btn-outline-success full-width-button" type="button">Начать игру</a>
+            </div>
+          </div>
+        </div>
+        <!-- Карточка 2 -->
+        <div class="col-lg-4 col-sm-12 mb-4">
+          <div class="card h-100">
+            <img src="../static/image/button5.jpg" class="card-img-top" alt="...">
+            <div class="card-body">
+                <button class="btn btn-outline-success full-width-button" data-bs-toggle="modal" data-bs-target="#stats">Статистика</button>
+            </div>
+          </div>
+        </div>
+        <!-- Карточка 3 -->
+        <div class="col-lg-4 col-sm-12 mb-4">
+          <div class="card h-100">
+            <img src="../static/image/ava2.jpg" class="card-img-top" alt="...">
+            <div class="card-body">
+                <a href='/profile' class="btn btn-outline-success full-width-button">Профиль</a>
+            </div>
+          </div>
+        </div>
+      </div>
+</div>
+<!-- Всплывающее окно со статистикой -->
+<div class="modal fade" id="stats" tabindex="-1" aria-labelledby="statsLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="statsLabel">Статистика игры</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Сохранить"></button>
+      </div>
+      <div class="modal-body">
+        <p>Всего игр сыграно: <span id="totalGames">0</span></p>
+        <p>Всего побед: <span id="totalWins">0</span></p>
+        <p>Всего поражений: <span id="totalLosses">0</span></p>
+      </div>
+      <div class="modal-footer">
+          <button type="submit" class="btn btn-outline-success" data-bs-dismiss="modal">ОК</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

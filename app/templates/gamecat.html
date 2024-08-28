@@ -1,0 +1,53 @@
+{% extends "shablon.html" %}
+
+{% block title %}Home Page{% endblock %}
+
+<style>
+  .card {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center; /* Центрирование содержимого по горизонтали */
+      height: 100%;
+      text-align: center; /* Центрирование текста */
+  }
+  .timer {
+      font-size: 48px; /* Увеличенный размер шрифта для таймера */
+      margin-top: 20px;
+      color: #333;
+  }
+</style>
+
+{% block content %}
+<div class="container my-1">
+    <div class="row">
+        <!-- Карточка 1 -->
+        <div class="col-lg-12 col-sm-12 mb-4">
+            <select class="form-select form-select-lg mb-3" aria-label=".form-select-lg пример" id="categorySelect">
+              <option selected>Выберите категорию вопросов</option>
+              <option value="География">География</option>
+              <option value="История">История</option>
+              <option value="Спорт">Спорт</option>
+              <option value="Литература">Литература</option>
+              <option value="Экономика">Экономика</option>
+            </select>
+            <a href="#" id="startGame" class="btn btn-outline-success full-width-button">Начать</a>
+        </div>
+    </div>
+</div>
+<script>
+    document.getElementById('startGame').addEventListener('click', function() {
+        const category = document.getElementById('categorySelect').value;
+        if (category) {
+            window.location.href = '/game?category=' + encodeURIComponent(category);
+        } else {
+            alert('Пожалуйста, выберите категорию.');
+        }
+    });
+</script>
+{% endblock %}

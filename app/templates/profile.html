@@ -1,0 +1,114 @@
+{% extends "shablon.html" %}
+
+{% block title %}Home Page{% endblock %}
+
+{% block content %}
+<div class="container my-1">
+    <div class="row">
+        <!-- Карточка 1 -->
+        <div class="col-lg-4 col-sm-12 mb-4">
+          <div class="card h-100">
+            <img src="../static/image/name1.jpg" class="card-img-top" alt="...">
+            <div class="card-body">
+                <h5 class="card-title">Имя</h5>
+                <p class="card-text">Леонид</p>
+                <button class="btn btn-outline-success full-width-button" data-bs-toggle="modal" data-bs-target="#changename">Изменить</button>
+            </div>
+          </div>
+        </div>
+        <!-- Карточка 2 -->
+        <div class="col-lg-4 col-sm-12 mb-4">
+          <div class="card h-100">
+            <img src="../static/image/email1.png" class="card-img-top" alt="...">
+            <div class="card-body">
+                <h5 class="card-title">E-mail</h5>
+                <p class="card-text">leoni@leoni.ru</p>
+              <button class="btn btn-outline-success full-width-button" data-bs-toggle="modal" data-bs-target="#changeemail">Изменить</button>
+            </div>
+          </div>
+        </div>
+        <!-- Карточка 3 -->
+        <div class="col-lg-4 col-sm-12 mb-4">
+          <div class="card h-100">
+            <img src="../static/image/ava2.jpg" class="card-img-top" alt="...">
+            <div class="card-body">
+                <h5 class="card-title">Аватар</h5>
+                <p class="card-text">&nbsp;&nbsp;&nbsp;&nbsp;</p>
+              <button class="btn btn-outline-success full-width-button" data-bs-toggle="modal" data-bs-target="#changeavatar">Изменить</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+<!-- Всплывающее окно изменения имени -->
+<div class="modal fade" id="changename" tabindex="-1" aria-labelledby="changenameLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="changenameLabel">Введите новое имя</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Сохранить"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="mb-3">
+            <label for="InputName" class="form-label"></label>
+            <input type="text" class="form-control" id="InputName" aria-describedby="emailHelp">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Отмена</button>
+        <button type="submit" class="btn btn-outline-success" data-bs-dismiss="modal">Сохранить изменения</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Всплывающее окно изменения e-mail -->
+<div class="modal fade" id="changeemail" tabindex="-1" aria-labelledby="changemailLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="changemailLabel">Введите новый e-mail</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Сохранить"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="mb-3">
+            <label for="InputEmail" class="form-label"></label>
+            <input type="email" class="form-control" id="InputEmail" aria-describedby="emailHelp">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Отмена</button>
+        <button type="submit" class="btn btn-outline-success" data-bs-dismiss="modal">Сохранить изменения</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Всплывающее окно изменения аватара -->
+<div class="modal fade" id="changeavatar" tabindex="-1" aria-labelledby="changeavatarLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="changeavatarLabel">Загрузите картинку с новым аватаром</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Сохранить"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="mb-3">
+            <label for="ChangeAvatar" class="form-label"></label>
+            <input type="file" class="form-control" id="InputAvatar" aria-describedby="emailHelp">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Отмена</button>
+        <button type="submit" class="btn btn-outline-success" data-bs-dismiss="modal">Сохранить изменения</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
