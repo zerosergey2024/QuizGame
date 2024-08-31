@@ -1,41 +1,116 @@
-from flask import Flask, render_template, request, jsonify
-from flask_socketio import SocketIO, join_room, leave_room, send
-import eventlet
+from flask import Flask, render_template, request, jsonify, redirect, url_for
+from flask_socketio import SocketIO, join_room, leave_room, send, emit
+from urllib.parse import unquote
+import os
+from werkzeug.utils import secure_filename
+from flask_wtf.csrf import CSRFProtect
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'secret!'
+app.config['SECRET_KEY'] = 'your_secret_key'
+csrf = CSRFProtect(app)
 socketio = SocketIO(app)
+
+app.config['UPLOAD_FOLDER'] = 'static/avatars/'
+app.config['SECRET_KEY'] = 'secret!'
+
+users = {
+    'username': 'leoni',
+    'name': 'Леонид',
+    'email': 'leoni@leoni.ru',
+    'avatar': '/static/img/ava2.jpg'
+}
+@app.route('/profile',  methods=['GET', 'POST'])
+def profile():
+    return render_template('profile.html', user=users)
+
+
+@app.route('/update_name', methods=['POST'])
+def update_name():
+    new_name = request.json.get('name')
+    if new_name:
+        users['name'] = new_name
+        return jsonify(success=True)
+    return jsonify(success=False)
+
+
+@app.route('/update_email', methods=['POST'])
+def update_email():
+    new_email = request.json.get('email')
+    if new_email:
+        users['email'] = new_email
+        return jsonify(success=True)
+    return jsonify(success=False)
+
+
+@app.route('/update_avatar', methods=['POST'])
+def update_avatar():
+    if 'avatar' not in request.files:
+        return jsonify(success=False)
+
+    file = request.files['avatar']
+    if file.filename == '':
+        return jsonify(success=False)
+
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(filepath)
+
+        users['avatar'] = '/' + filepath.replace('\\', '/')
+        return jsonify(success=True, new_avatar_url=users['avatar'])
+
+    return jsonify(success=False)
+
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in {'png', 'jpg', 'jpeg', 'gif'}
+
 
 players = {}
 
-# Пример данных для вопросов и ответов
 questions = {
     'География': [
-        ('Столица России?', 'Москва'),
-        ('Столица Франции?', 'Париж'),
-        ('Столица Японии?', 'Токио')
+        {'question': 'Столица России?', 'correct_answer': 'Москва',
+         'answers': ['Москва', 'Берлин', 'Лондон', 'Ташкент']},
+        {'question': 'Какая река самая длинная в мире?', 'correct_answer': 'Нил',
+         'answers': ['Амазонка', 'Нил', 'Миссисипи', 'Янцзы']},
+        {'question': 'Какой океан самый большой?', 'correct_answer': 'Тихий океан',
+         'answers': ['Атлантический океан', 'Тихий океан', 'Индийский океан', 'Северный Ледовитый океан']},
+        {'question': 'В какой стране находится Мачу-Пикчу?', 'correct_answer': 'Перу',
+         'answers': ['Чили', 'Бразилия', 'Перу', 'Колумбия']},
+        {'question': 'Какая пустыня самая большая в мире?', 'correct_answer': 'Сахара',
+         'answers': ['Гоби', 'Калахари', 'Сахара', 'Аравийская']},
+        {'question': 'Какая столица Австралии?', 'correct_answer': 'Канберра',
+         'answers': ['Сидней', 'Мельбурн', 'Канберра', 'Брисбен']},
+        {'question': 'Какая страна самая большая по площади?', 'correct_answer': 'Россия',
+         'answers': ['Канада', 'Китай', 'США', 'Россия']},
+        {'question': 'На каком континенте находится пустыня Сахара?', 'correct_answer': 'Африка',
+         'answers': ['Азия', 'Южная Америка', 'Африка', 'Австралия']},
+        {'question': 'Какой самый высокий водопад в мире?', 'correct_answer': 'Анхель',
+         'answers': ['Ниагарский водопад', 'Виктория', 'Анхель', 'Игуаcу']},
+        {'question': 'Какой город является столицей Японии?', 'correct_answer': 'Токио',
+         'answers': ['Осака', 'Киото', 'Хиросима', 'Токио']},
     ],
     'История': [
-        ('Год начала Второй мировой войны?', '1939'),
-        ('Год окончания Второй мировой войны?', '1945'),
-        ('Год начала Первой мировой войны?', '1914')
+               # Вопросы по истории
     ],
     'Спорт': [
-        ('Сколько игроков в футбольной команде?', '11'),
-        ('Сколько игроков в баскетбольной команде?', '5'),
-        ('Сколько игроков в хоккейной команде?', '6')
+        # Вопросы по спорту
     ],
     'Литература': [
-        ('Автор романа "Война и мир"?', 'Лев Толстой'),
-        ('Автор романа "Преступление и наказание"?', 'Федор Достоевский'),
-        ('Автор романа "Мастер и Маргарита"?', 'Михаил Булгаков')
+        # Вопросы по литературе
     ],
     'Экономика': [
-        ('Что такое инфляция?', 'Повышение общего уровня цен'),
-        ('Что такое дефляция?', 'Понижение общего уровня цен'),
-        ('Что такое ВВП?', 'Валовой внутренний продукт')
+        # Вопросы по экономике
     ]
 }
+@app.route('/game')
+def game():
+    category = request.args.get('category')
+    if category in questions:
+        return render_template('game.html', category=category)
+    else:
+        return "Invalid category", 400
 
 @app.route('/')
 def index():
@@ -45,21 +120,9 @@ def index():
 def home():
     return render_template('home.html')
 
-@app.route('/profile')
-def profile():
-    return render_template('profile.html')
-
 @app.route('/gamecat')
 def gamecat():
     return render_template('gamecat.html')
-
-@app.route('/game')
-def game():
-    category = request.args.get('category')
-    if category in questions:
-        return render_template('game.html', category=category)
-    else:
-        return "Invalid category", 400
 
 @app.route('/reg')
 def reg():
@@ -101,9 +164,16 @@ def check_answer(data):
     answer = data['answer']
     category = players[username]['category']
     question_index = players[username]['question_index']
-    _, correct_answer = questions[category][question_index]
+    correct_answer = questions[category][question_index][1]
     if answer.strip().lower() == correct_answer.lower():
         players[username]['score'] += 1
+    players[username]['question_index'] += 1
+    next_question(username, room)
+
+@socketio.on('skip_question')
+def skip_question(data):
+    username = data['username']
+    room = data['room']
     players[username]['question_index'] += 1
     next_question(username, room)
 
@@ -111,11 +181,18 @@ def next_question(username, room):
     category = players[username]['category']
     question_index = players[username]['question_index']
     if question_index < len(questions[category]):
-        question, _ = questions[category][question_index]
-        socketio.emit('next_question', {'question': question}, to=room)
+        question_data = questions[category][question_index]
+        question = question_data['question']
+        answers = question_data['answers']
+        socketio.emit('next_question', {
+            'question': question,
+            'answers': answers,
+            'index': question_index}, to=room)
     else:
         score = players[username]['score']
         socketio.emit('show_results', {'score': score, 'total': len(questions[category])}, to=room)
 
 if __name__ == '__main__':
     socketio.run(app, debug=True)
+
+

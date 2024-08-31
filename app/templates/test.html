@@ -1,0 +1,259 @@
+{% extends "shablon.html" %}
+
+{% block title %}Home Page{% endblock %}
+
+<style>
+  .card {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      text-align: center;
+  }
+  .timer {
+      font-size: 48px;
+      margin-top: 20px;
+      color: #333;
+  }
+</style>
+
+{% block content %}
+<div class="container my-1">
+    <div class="row">
+        <div class="col-lg-12 col-sm-12 mb-4">
+            <div class="card h-100" style="width: 54rem; height: auto;">
+                <div class="card-body">
+                    <div class="d-grid gap-2 d-md-flex justify-content-between">
+                        <div class="fw-bolder card-title" align="left" id="timer" class="timer">30</div>
+                        <div class="fw-bolder card-title" align="right" id="counter" class="counter">1</div>
+                    </div>
+                    <div id="question" class="fs-3 fw-bold card-title" align="center">Столица России?</div>
+                    <a href="#" type="submit" class="btn btn-outline-success fw-bolder full-width-button my-1" onclick="checkAnswer('Москва')">Москва</a>
+                    <a href="#" type="submit" class="btn btn-outline-success fw-bolder full-width-button my-1" onclick="checkAnswer('Берлин')">Берлин</a>
+                    <a href="#" type="submit" class="btn btn-outline-success fw-bolder full-width-button my-1" onclick="checkAnswer('Лондон')">Лондон</a>
+                    <a href="#" type="submit" class="btn btn-outline-success fw-bolder full-width-button my-1" onclick="checkAnswer('Ташкент')">Ташкент</a>
+                    <a href="#" type="submit" class="btn btn-outline-danger fw-bolder full-width-button my-1" onclick="skipQuestion()">Пропустить</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let timeLeft = 30;
+    const timerElement = document.getElementById('timer');
+    const questionElement = document.getElementById('question');
+    const counterElement = document.getElementById('counter');
+    let currentQuestionIndex = 0;
+    const category = "{{ category }}"; // Получаем категорию из контекста Jinja
+
+    const questions = {
+        'География': [
+            { question: 'Столица России?', answers: ['Москва', 'Берлин', 'Лондон', 'Ташкент'] },
+            { question: 'Столица Франции?', answers: ['Париж', 'Берлин', 'Лондон', 'Ташкент'] },
+            { question: 'Столица Японии?', answers: ['Токио', 'Пекин', 'Сеул', 'Бангкок'] }
+        ],
+        'История': [
+            { question: 'Кто был первым президентом США?', answers: ['Джордж Вашингтон', 'Абрахам Линкольн', 'Томас Джефферсон', 'Джон Адамс'] },
+            { question: 'Когда началась Вторая мировая война?', answers: ['1939', '1941', '1935', '1945'] }
+        ],
+        // Добавьте другие категории и вопросы здесь
+    };
+
+    const countdown = setInterval(() => {
+        if (timeLeft <= 0) {
+            clearInterval(countdown);
+            timerElement.textContent = 'Время вышло!';
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
+        } else {
+            timerElement.textContent = timeLeft;
+            timeLeft--;
+        }
+    }, 1000);
+
+    function updateQuestion() {
+        if (currentQuestionIndex < questions[category].length) {
+            const currentQuestion = questions[category][currentQuestionIndex];
+            questionElement.textContent = currentQuestion.question;
+            counterElement.textContent = currentQuestionIndex + 1;
+
+            const answerButtons = document.querySelectorAll('.btn-outline-success');
+            answerButtons.forEach((button, index) => {
+                button.textContent = currentQuestion.answers[index];
+                button.setAttribute('onclick', `checkAnswer('${currentQuestion.answers[index]}')`);
+            });
+     // Сброс таймера для следующего вопроса
+            timeLeft = 30;
+            timerElement.textContent = timeLeft;
+
+            // Перезапуск таймера для нового вопроса
+            clearInterval(countdown);
+            setInterval(() => {
+                if (timeLeft <= 0) {
+                    clearInterval(countdown);
+                    skipQuestion();
+                } else {
+                    timerElement.textContent = timeLeft;
+                    timeLeft--;
+                }
+            }, 1000);
+        } else {
+            questionElement.textContent = 'Викторина завершена!';
+            clearInterval(countdown);
+        }
+    }
+
+    function checkAnswer(answer) {
+        // Логика проверки ответа
+        alert(`Вы выбрали: ${answer}`);
+        console.log(`Answer chosen: ${answer}`);
+        currentQuestionIndex++;
+        updateQuestion();
+    }
+
+    function skipQuestion() {
+        currentQuestionIndex++;
+        updateQuestion();
+    }
+
+    updateQuestion();
+</script>
+
+{% endblock %}
+
+
+
+
+def next_question(username, room):
+ category = players[username]['category']
+    question_index = players[username]['question_index']
+    if question_index < len(questions[category]):
+        question, _ = questions[category][question_index]
+        answers = [pair[1] for pair in questions[category]]
+        socketio.emit('next_question', {'question': question, 'answers': answers}, to=room)
+    else:
+        score = players[username]['score']
+        socketio.emit('show_results', {'score': score, 'total': len(questions[category])}, to=room)
+
+{% extends "shablon.html" %}
+
+{% block title %}Home Page{% endblock %}
+
+{% block content %}
+<div class="container my-1">
+    <div class="row">
+        <!-- Карточка 1 -->
+        <div class="col-lg-4 col-sm-12 mb-4">
+          <div class="card h-100">
+            <img src="../static/img/name1.jpg" class="card-img-top" alt="...">
+            <div class="card-body">
+                <h5 class="card-title">Имя</h5>
+                <p class="card-text">Леонид</p>
+                <button class="btn btn-outline-success full-width-button" data-bs-toggle="modal" data-bs-target="#changename">Изменить</button>
+            </div>
+          </div>
+        </div>
+        <!-- Карточка 2 -->
+        <div class="col-lg-4 col-sm-12 mb-4">
+          <div class="card h-100">
+            <img src="../static/img/email1.png" class="card-img-top" alt="...">
+            <div class="card-body">
+                <h5 class="card-title">E-mail</h5>
+                <p class="card-text">leoni@leoni.ru</p>
+              <button class="btn btn-outline-success full-width-button" data-bs-toggle="modal" data-bs-target="#changeemail">Изменить</button>
+            </div>
+          </div>
+        </div>
+        <!-- Карточка 3 -->
+        <div class="col-lg-4 col-sm-12 mb-4">
+          <div class="card h-100">
+            <img src="../static/img/ava2.jpg" class="card-img-top" alt="...">
+            <div class="card-body">
+                <h5 class="card-title">Аватар</h5>
+                <p class="card-text">&nbsp;&nbsp;&nbsp;&nbsp;</p>
+              <button class="btn btn-outline-success full-width-button" data-bs-toggle="modal" data-bs-target="#changeavatar">Изменить</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+<!-- Всплывающее окно изменения имени -->
+<div class="modal fade" id="changename" tabindex="-1" aria-labelledby="changenameLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="changenameLabel">Введите новое имя</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Сохранить"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="mb-3">
+            <label for="InputName" class="form-label"></label>
+            <input type="text" class="form-control" id="InputName" aria-describedby="emailHelp">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Отмена</button>
+        <button type="submit" class="btn btn-outline-success" data-bs-dismiss="modal">Сохранить изменения</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Всплывающее окно изменения e-mail -->
+<div class="modal fade" id="changeemail" tabindex="-1" aria-labelledby="changemailLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="changemailLabel">Введите новый e-mail</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Сохранить"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="mb-3">
+            <label for="InputEmail" class="form-label"></label>
+            <input type="email" class="form-control" id="InputEmail" aria-describedby="emailHelp">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Отмена</button>
+        <button type="submit" class="btn btn-outline-success" data-bs-dismiss="modal">Сохранить изменения</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Всплывающее окно изменения аватара -->
+<div class="modal fade" id="changeavatar" tabindex="-1" aria-labelledby="changeavatarLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="changeavatarLabel">Загрузите картинку с новым аватаром</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Сохранить"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="mb-3">
+            <label for="ChangeAvatar" class="form-label"></label>
+            <input type="file" class="form-control" id="InputAvatar" aria-describedby="emailHelp">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Отмена</button>
+        <button type="submit" class="btn btn-outline-success" data-bs-dismiss="modal">Сохранить изменения</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

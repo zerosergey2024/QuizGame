@@ -12,12 +12,12 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
-      align-items: center; /* Центрирование содержимого по горизонтали */
+      align-items: center;
       height: 100%;
-      text-align: center; /* Центрирование текста */
+      text-align: center;
   }
   .timer {
-      font-size: 48px; /* Увеличенный размер шрифта для таймера */
+      font-size: 48px;
       margin-top: 20px;
       color: #333;
   }
@@ -30,15 +30,15 @@
             <div class="card h-100" style="width: 54rem; height: auto;">
                 <div class="card-body">
                     <div class="d-grid gap-2 d-md-flex justify-content-between">
-                        <div class="fw-bolder card-title" align="left" id="timer" class="timer">30</div>
-                        <div class="fw-bolder card-title" align="right" id="counter" class="counter"> 1 </div>
+                        <div class="fw-bolder card-title timer text-left" id="timer">30</div>
+                        <div class="fw-bolder card-title counter text-right" id="counter">1</div>
                     </div>
-                    <div id="question" class="fs-3 fw-bold card-title" align="center">Столица России?</div>
-                    <a href="#" type="submit" class="btn btn-outline-success fw-bolder full-width-button my-1" onclick="checkAnswer('Москва')">Москва</a>
-                    <a href="#" type="submit" class="btn btn-outline-success fw-bolder full-width-button my-1" onclick="checkAnswer('Берлин')">Берлин</a>
-                    <a href="#" type="submit" class="btn btn-outline-success fw-bolder full-width-button my-1" onclick="checkAnswer('Лондон')">Лондон</a>
-                    <a href="#" type="submit" class="btn btn-outline-success fw-bolder full-width-button my-1" onclick="checkAnswer('Ташкент')">Ташкент</a>
-                    <a href="#" type="submit" class="btn btn-outline-danger fw-bolder full-width-button my-1" onclick="skipQuestion()">Пропустить</a>
+                    <div id="question" class="fs-3 fw-bold card-title text-center">Столица России?</div>
+                    <a href="#" id="btn1" class="btn btn-outline-success fw-bolder full-width-button my-1">Москва</a>
+                    <a href="#" id="btn2" class="btn btn-outline-success fw-bolder full-width-button my-1">Берлин</a>
+                    <a href="#" id="btn3" class="btn btn-outline-success fw-bolder full-width-button my-1">Лондон</a>
+                    <a href="#" id="btn4" class="btn btn-outline-success fw-bolder full-width-button my-1">Ташкент</a>
+                    <a href="#" class="btn btn-outline-danger fw-bolder full-width-button my-1" onclick="skipQuestion()">Пропустить</a>
                 </div>
             </div>
         </div>
@@ -48,13 +48,35 @@
 <script>
     let timeLeft = 30;
     const timerElement = document.getElementById('timer');
+    const questionElement = document.getElementById('question');
+    const counterElement = document.getElementById('counter');
+    let currentQuestionIndex = 0;
+    let category = "{{ category }}";
+
+    if (!category) {
+        category = 'География';  // Установим категорию по умолчанию
+    }
+
+    let questions = {
+        'География': [
+            {'question': 'Столица России?', 'correct_answer': 'Москва',
+            'answers': ['Москва', 'Берлин', 'Лондон', 'Ташкент']},
+            {'question': 'Какая река самая длинная в мире?', 'correct_answer': 'Нил',
+            'answers': ['Амазонка', 'Нил', 'Миссисипи', 'Янцзы']},
+            {'question': 'Какой океан самый большой?', 'correct_answer': 'Тихий океан',
+            'answers': ['Атлантический океан', 'Тихий океан', 'Индийский океан', 'Северный Ледовитый океан']},
+            {'question': 'В какой стране находится Мачу-Пикчу?', 'correct_answer': 'Перу',
+           'answers': ['Чили', 'Бразилия', 'Перу', 'Колумбия']},
+        ],
+        // Добавлены другие категории...
+    };
 
     const countdown = setInterval(() => {
         if (timeLeft <= 0) {
             clearInterval(countdown);
             timerElement.textContent = 'Время вышло!';
             setTimeout(() => {
-                location.reload(); // обновление страницы через 2 секунды после истечения времени
+                location.reload();
             }, 1000);
         } else {
             timerElement.textContent = timeLeft;
@@ -62,16 +84,40 @@
         }
     }, 1000);
 
+    function loadQuestion() {
+        if (currentQuestionIndex < questions[category].length) {
+            const question = questions[category][currentQuestionIndex].question;
+            const answers = questions[category][currentQuestionIndex].answers;
+            questionElement.textContent = question;
+            counterElement.textContent = currentQuestionIndex + 1;
+
+            for (let i = 0; i < answers.length; i++) {
+                const button = document.getElementById(`btn${i+1}`);
+                button.textContent = answers[i];
+                button.onclick = function() { checkAnswer(answers[i]); };
+            }
+        } else {
+            alert('Игра завершена!');
+            location.reload();
+        }
+    }
+
     function checkAnswer(answer) {
-        // Здесь можно добавить логику проверки ответа
         alert('Вы выбрали: ' + answer);
-        // Обновить счетчик вопросов и запустить следующий вопрос
+        currentQuestionIndex++;
+        loadQuestion();
     }
 
     function skipQuestion() {
-        // Здесь можно добавить логику пропуска вопроса
         alert('Вопрос пропущен');
-        // Обновить счетчик вопросов и запустить следующий вопрос
+        currentQuestionIndex++;
+        loadQuestion();
     }
+
+    loadQuestion();
 </script>
 {% endblock %}
+
+
+
+

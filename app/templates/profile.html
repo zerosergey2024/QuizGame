@@ -8,10 +8,10 @@
         <!-- Карточка 1 -->
         <div class="col-lg-4 col-sm-12 mb-4">
           <div class="card h-100">
-            <img src="../static/image/name1.jpg" class="card-img-top" alt="...">
+            <img src="../static/img/name1.jpg" class="card-img-top" alt="...">
             <div class="card-body">
                 <h5 class="card-title">Имя</h5>
-                <p class="card-text">Леонид</p>
+                <p id="displayName" class="card-text">{{ user.name }}</p>
                 <button class="btn btn-outline-success full-width-button" data-bs-toggle="modal" data-bs-target="#changename">Изменить</button>
             </div>
           </div>
@@ -19,10 +19,10 @@
         <!-- Карточка 2 -->
         <div class="col-lg-4 col-sm-12 mb-4">
           <div class="card h-100">
-            <img src="../static/image/email1.png" class="card-img-top" alt="...">
+            <img src="../static/img/email1.png" class="card-img-top" alt="...">
             <div class="card-body">
                 <h5 class="card-title">E-mail</h5>
-                <p class="card-text">leoni@leoni.ru</p>
+                <p id="displayEmail" class="card-text">{{ user.email }}</p>
               <button class="btn btn-outline-success full-width-button" data-bs-toggle="modal" data-bs-target="#changeemail">Изменить</button>
             </div>
           </div>
@@ -30,7 +30,7 @@
         <!-- Карточка 3 -->
         <div class="col-lg-4 col-sm-12 mb-4">
           <div class="card h-100">
-            <img src="../static/image/ava2.jpg" class="card-img-top" alt="...">
+            <img id="displayAvatar" src="{{ user.avatar }}" class="card-img-top" alt="...">
             <div class="card-body">
                 <h5 class="card-title">Аватар</h5>
                 <p class="card-text">&nbsp;&nbsp;&nbsp;&nbsp;</p>
@@ -46,19 +46,19 @@
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="changenameLabel">Введите новое имя</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Сохранить"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form>
+        <form id="formName">
           <div class="mb-3">
-            <label for="InputName" class="form-label"></label>
-            <input type="text" class="form-control" id="InputName" aria-describedby="emailHelp">
+            <label for="InputName" class="form-label">Новое имя</label>
+            <input type="text" class="form-control" id="InputName" aria-describedby="nameHelp" value="{{ user.name }}">
           </div>
         </form>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Отмена</button>
-        <button type="submit" class="btn btn-outline-success" data-bs-dismiss="modal">Сохранить изменения</button>
+        <button type="button" class="btn btn-outline-success" onclick="saveName()">Сохранить изменения</button>
       </div>
     </div>
   </div>
@@ -70,19 +70,19 @@
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="changemailLabel">Введите новый e-mail</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Сохранить"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form>
+        <form id="formEmail">
           <div class="mb-3">
-            <label for="InputEmail" class="form-label"></label>
-            <input type="email" class="form-control" id="InputEmail" aria-describedby="emailHelp">
+            <label for="InputEmail" class="form-label">Новый e-mail</label>
+            <input type="email" class="form-control" id="InputEmail" aria-describedby="emailHelp" value="{{ user.email }}">
           </div>
         </form>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Отмена</button>
-        <button type="submit" class="btn btn-outline-success" data-bs-dismiss="modal">Сохранить изменения</button>
+        <button type="button" class="btn btn-outline-success" onclick="saveEmail()">Сохранить изменения</button>
       </div>
     </div>
   </div>
@@ -93,22 +93,79 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="changeavatarLabel">Загрузите картинку с новым аватаром</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Сохранить"></button>
+        <h1 class="modal-title fs-5" id="changeavatarLabel">Загрузите новый аватар</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form>
+        <form id="formAvatar" enctype="multipart/form-data">
           <div class="mb-3">
-            <label for="ChangeAvatar" class="form-label"></label>
-            <input type="file" class="form-control" id="InputAvatar" aria-describedby="emailHelp">
+            <label for="InputAvatar" class="form-label">Выберите изображение</label>
+            <input type="file" class="form-control" id="InputAvatar" accept="image/*">
           </div>
         </form>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Отмена</button>
-        <button type="submit" class="btn btn-outline-success" data-bs-dismiss="modal">Сохранить изменения</button>
+        <button type="button" class="btn btn-outline-success" onclick="saveAvatar()">Сохранить изменения</button>
       </div>
     </div>
   </div>
 </div>
+
+<script>
+    function saveName() {
+        const newName = document.getElementById('InputName').value;
+        fetch('/update_name', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({name: newName})
+        }).then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('displayName').innerText = newName;
+            }
+        });
+    }
+
+    function saveEmail() {
+        const newEmail = document.getElementById('InputEmail').value;
+        fetch('/update_email', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({email: newEmail})
+        }).then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('displayEmail').innerText = newEmail;
+            }
+        });
+    }
+
+    function saveAvatar() {
+        const formData = new FormData();
+        const avatarFile = document.getElementById('InputAvatar').files[0];
+        formData.append('avatar', avatarFile);
+
+        fetch('/update_avatar', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token() }}'
+            },
+            body: formData
+        }).then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('displayAvatar').src = data.new_avatar_url;
+            }
+        });
+    }
+</script>
+
 {% endblock %}
+</div>
